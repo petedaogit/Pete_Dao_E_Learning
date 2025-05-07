@@ -3,7 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 import connectCloudinary from "./db/cloudinary.js";
 import connectDB from "./db/db.js";
-import { clerkWebhook } from "./controllers/webhook.js";
+import { clerkWebhooks } from "./controllers/webhooks.js";
 import educatorRouter from "./routes/educators.routes.js";
 import { clerkMiddleware } from "@clerk/express";
 
@@ -23,7 +23,7 @@ const port = process.env.PORT || 4000;
 
 //Routes
 app.get("/", (req, res) => res.send("Api is running!"));
-app.post("/clerk", express.json(), clerkWebhook);
+app.post("/clerk", express.json(), clerkWebhooks);
 app.use("/api/educator", express.json(), educatorRouter);
 
 app.listen(port, () => console.log(`Server is running on port ${port}`));
