@@ -9,6 +9,7 @@ export const AppContext = createContext();
 export const AppContextProvider = (props) => {
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
+
   const { getToken } = useAuth();
   const { user } = useUser();
 
