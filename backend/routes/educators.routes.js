@@ -3,6 +3,8 @@ import {
   addCourse,
   updateRoleToEducator,
   getEducatorCourses,
+  educatorDashboardData,
+  getEnrolledStudentsData,
 } from "../controllers/educators.controller.js";
 import { protectEducator } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.js";
@@ -19,6 +21,14 @@ educatorRouter.post(
   addCourse
 );
 
-educatorRouter.get("/get-courses", protectEducator, getEducatorCourses);
+educatorRouter.get("/courses", protectEducator, getEducatorCourses);
+
+educatorRouter.get("/dashboard", protectEducator, educatorDashboardData);
+
+educatorRouter.get(
+  "/enrolled-students",
+  protectEducator,
+  getEnrolledStudentsData
+);
 
 export default educatorRouter;

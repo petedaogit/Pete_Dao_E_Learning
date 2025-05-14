@@ -6,6 +6,8 @@ import connectDB from "./db/db.js";
 import { clerkWebhooks } from "./controllers/webhooks.js";
 import educatorRouter from "./routes/educators.routes.js";
 import { clerkMiddleware } from "@clerk/express";
+import courseRouter from "./routes/course.routes.js";
+import userRouter from "./routes/user.routes.js";
 
 //initialize Express
 const app = express();
@@ -25,5 +27,7 @@ const port = process.env.PORT || 4000;
 app.get("/", (req, res) => res.send("Api is running!"));
 app.post("/clerk", express.json(), clerkWebhooks);
 app.use("/api/educator", express.json(), educatorRouter);
+app.use("/api/course", express.json(), courseRouter);
+app.use("/api/user", express.json(), userRouter);
 
 app.listen(port, () => console.log(`Server is running on port ${port}`));
