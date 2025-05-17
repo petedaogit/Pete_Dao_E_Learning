@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
-import { useParams } from "react-router-dom";
+import { useParams, data } from "react-router-dom";
 import Loading from "../../components/students/Loading";
 import { assets } from "../../assets/assets";
 import humanizeDuration from "humanize-duration";
 import Footer from "../../components/students/Footer";
 import YouTube from "react-youtube";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 function CourseDetails() {
   const { id } = useParams();
@@ -22,16 +24,37 @@ function CourseDetails() {
     calculateNoOfLectures,
     calculateCourseDuration,
     currency,
+    backendUrl,
+    userData,
   } = useContext(AppContext);
 
   const fetchCourseData = async () => {
-    const findCourse = allCourses.find((course) => course._id === id);
-    setCourseData(findCourse);
+    try {
+      const { data } = await axios.get(backendUrl + "/api/course/" + id);
+      if (data.success) {
+        setCourseData(data.courseData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
+
+  // const enrollCourse = async () =>{
+  //   try {
+  //     const token = await getToken();
+  //     const {data} = await axios.post(backendUrl + "/api/user/purchase", {
+
+  //     })
+  //   } catch (error) {
+
+  //   }
+  // }
 
   useEffect(() => {
     fetchCourseData();
-  }, [allCourses]);
+  }, []);
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
