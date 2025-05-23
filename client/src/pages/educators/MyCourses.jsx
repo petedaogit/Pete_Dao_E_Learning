@@ -2,18 +2,34 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/students/Loading";
 import { assets } from "../../assets/assets";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function MyCourses() {
-  const { currency, allCourses } = useContext(AppContext);
+  const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
   const [courses, setCourses] = useState(null);
 
   const fetEducatorCourses = async () => {
-    setCourses(allCourses);
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(backendUrl + "/api/educator/courses", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setCourses(data.courses);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
-    fetEducatorCourses();
-  }, []);
+    if (isEducator) {
+      fetEducatorCourses();
+    }
+  }, [isEducator]);
 
   return courses ? (
     <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
@@ -52,7 +68,7 @@ function MyCourses() {
                       course.enrolledStudents.length *
                         (course.coursePrice -
                           (course.discount * course.coursePrice) / 100)
-                    )}
+                    ).toFixed(2)}
                   </td>
                   <td className="px-4 py-3">
                     {course.enrolledStudents.length}

@@ -70,13 +70,12 @@ export const educatorDashboardData = async (req, res) => {
 
     //calculating total earnings
     const purchases = await Purchase.find({
-      courseIds: { $in: courseIds },
+      courseId: { $in: courseIds },
       status: "completed",
     });
-    const totalEarnings = purchases.reduce(
-      (sum, purchase) => sum + purchase.amount,
-      0
-    );
+    const totalEarnings = Math.round(
+      purchases.reduce((sum, purchase) => sum + purchase.amount, 0)
+    ).toFixed(2);
 
     //Collect unique enrolled student IDs with their course titles
     const enrolledStudentsData = [];
