@@ -14,7 +14,7 @@ function CourseDetails() {
 
   const [courseData, setCourseData] = useState(null);
   const [openSections, setOpenSections] = useState({});
-  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false);
   const [playerData, setPlayerData] = useState(null);
 
   const {
@@ -26,6 +26,7 @@ function CourseDetails() {
     currency,
     backendUrl,
     userData,
+    getToken,
   } = useContext(AppContext);
 
   const fetchCourseData = async () => {
@@ -41,20 +42,49 @@ function CourseDetails() {
     }
   };
 
-  // const enrollCourse = async () =>{
-  //   try {
-  //     const token = await getToken();
-  //     const {data} = await axios.post(backendUrl + "/api/user/purchase", {
+  const enrollCourse = async () => {
+    try {
+      if (!userData) {
+        toast.error("Please login to enroll in the course");
+        return;
+      }
+      if (isAlreadyEnrolled) {
+        toast.warn("You are already enrolled in this course");
+        return;
+      }
 
-  //     })
-  //   } catch (error) {
-
-  //   }
-  // }
+      const token = await getToken();
+      const { data } = await axios.post(
+        backendUrl + "/api/user/purchase",
+        {
+          courseId: courseData._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (data.success) {
+        const { session_url } = data;
+        window.location.replace(session_url);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   useEffect(() => {
     fetchCourseData();
   }, []);
+
+  useEffect(() => {
+    if (userData && courseData) {
+      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
+    }
+  }, [userData, courseData]); //if userdata enrolledcourses includes coursedata id, means user already enrolled
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -104,7 +134,10 @@ function CourseDetails() {
             </p>
           </div>
           <p className="text-sm">
-            Course by <span className="text-blue-600 underline">Edemy</span>{" "}
+            Course by{" "}
+            <span className="text-blue-600 underline">
+              {courseData.educator.name}
+            </span>{" "}
           </p>
           <div className="pt-8 text-gray-800">
             <h2 className="text-xl font-semibold">Course Structure</h2>
@@ -247,8 +280,11 @@ function CourseDetails() {
                 <p>{calculateNoOfLectures(courseData)} lessons</p>
               </div>
             </div>
-            <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
-              {isEnrolled ? "Already Enrolled" : "Enroll Now"}
+            <button
+              onClick={enrollCourse}
+              className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium"
+            >
+              {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
             </button>
             <div className="pt-6">
               <p className="md:text-xl text-lg font-medium text-gray-800">
