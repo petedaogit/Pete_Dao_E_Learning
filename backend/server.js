@@ -17,7 +17,17 @@ connectCloudinary();
 connectDB();
 
 //middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://lms-frontend-pink-six.vercel.app",
+      "http://localhost:5173", // For local development
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(clerkMiddleware());
 
 //port
