@@ -20,9 +20,10 @@ connectDB();
 app.use(
   cors({
     origin: [
-      "https://lms-frontend-pink-six.vercel.app",
+      "https://lms-frontend-37skw3on3-nam-daos-projects.vercel.app/",
       "http://localhost:5173", // For local development
       "https://pete-dao-e-learning.onrender.com",
+      process.env.FRONTEND_URL,
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
